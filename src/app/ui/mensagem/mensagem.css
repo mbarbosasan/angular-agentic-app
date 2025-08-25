@@ -1,0 +1,17 @@
+:host {
+  width: 66%;
+}
+
+.message {
+  padding: 1em;
+}
+
+.user-message {
+  background-color: var(--color-green-100);
+  border-radius: 10px 0px;
+}
+
+.ai-message {
+  background-color: var(--color-gray-100);
+  border-radius: 0px 10px;
+}
