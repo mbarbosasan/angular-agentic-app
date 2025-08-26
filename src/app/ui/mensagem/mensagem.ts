@@ -1,17 +1,23 @@
-import { Component, input } from '@angular/core';
+import { Component, input, OnChanges, SimpleChanges } from '@angular/core';
 
 @Component({
   selector: 'app-mensagem',
   imports: [],
   template: `
-    <p class="message" [class]="fromUser() ? 'user-message' : 'ai-message'">{{ message() }}</p>
+    <p class="message" [class]="fromUser() ? 'user-message' : 'ai-message'">
+      {{ message() }}
+    </p>
   `,
   host: {
     '[class.self-end]': '!fromUser()',
   },
-  styleUrl: './mensagem.css'
+  styleUrl: './mensagem.css',
 })
-export class Mensagem {
+export class Mensagem implements OnChanges {
   fromUser = input<boolean>(false);
-  message = input.required<string>();
+  message = input<string>();
+
+  ngOnChanges(changes: SimpleChanges): void {
+    console.log(changes);
+  }
 }
