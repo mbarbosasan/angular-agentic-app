@@ -35,6 +35,15 @@ export class App {
   users$ = toSignal(this.reloadUsers.pipe(switchMap(() => this.usersService.getUsers())));
 
   openChat() {
-    this.dialog.open(Chat, { width: '60%', minWidth: '300px', height: '80%', minHeight: '500px' });
+    const componentRef = this.dialog.open(Chat, {
+      width: '60%',
+      minWidth: '300px',
+      height: '80%',
+      minHeight: '500px',
+    });
+
+    componentRef.componentInstance.reloadUsers.subscribe(() => {
+      this.reloadUsers.next(null);
+    });
   }
 }

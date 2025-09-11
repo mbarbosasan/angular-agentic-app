@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, output, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { tap } from 'rxjs';
@@ -44,6 +44,7 @@ export class Chat {
     message: new FormControl(),
   });
   loading = signal(false);
+  reloadUsers = output();
 
   sendMessage() {
     this.form.controls['message'].disable();
@@ -60,6 +61,7 @@ export class Chat {
       )
       .subscribe({
         next: (response) => {
+          this.reloadUsers.emit();
           console.log(response);
         },
       });
