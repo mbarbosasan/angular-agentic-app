@@ -1,4 +1,4 @@
-import { generateText, stepCountIs, tool } from 'ai';
+import { generateText, tool } from 'ai';
 import { createGeminiProvider } from 'ai-sdk-provider-gemini-cli';
 import cors from 'cors';
 import express from 'express';
@@ -29,7 +29,7 @@ const tools = {
     }),
     execute: ({ name }: { name: string }) => {
       users.push(name);
-      return users;
+      return `O usuário ${name} foi adicionado com sucesso.`;
     },
   }),
   removeUsers: tool({
@@ -39,6 +39,7 @@ const tools = {
     }),
     execute: ({ name }: { name: string }) => {
       users = users.filter((u) => u !== name);
+      return `O usuário ${name} foi removido com sucesso.`;
     },
   }),
 };
@@ -46,18 +47,22 @@ const tools = {
 app.post('/ai/message', async (req, res) => {
   let { messages } = req.body;
 
-  const response = await generateText({
+  const { steps, response } = await generateText({
     model: gemini('gemini-2.5-flash'),
-    system: 'Você é um agente capaz de adicionar usuários na aplicação por solicitação do usuário',
+    system:
+      'Você é um agente capaz de adicionar usuários na aplicação por solicitação do usuário, antes de realizar qualquer ação confirme com o usuário se realmente é isso que ele deseja fazer.',
     tools,
     messages,
   });
 
-  if (response.toolCalls.length) {
-    const toolResponse = await generateText({
+  if (steps[0].toolCalls.length) {
+    const toolCall = steps[0];
+
+    messages.push(...toolCall.response.messages);
+
+    const response = await generateText({
       model: gemini('gemini-2.5-flash'),
       tools,
-      stopWhen: stepCountIs(2),
       messages,
     });
 
@@ -66,7 +71,7 @@ app.post('/ai/message', async (req, res) => {
       content: [
         {
           type: 'text',
-          text: toolResponse.text,
+          text: response.text,
         },
       ],
     });
@@ -76,7 +81,7 @@ app.post('/ai/message', async (req, res) => {
       content: [
         {
           type: 'text',
-          text: response.text,
+          text: steps[0].text,
         },
       ],
     });
