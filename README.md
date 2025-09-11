@@ -4,6 +4,8 @@ Application built with Angular + Express to practice my knowledge in AI. The goa
 
 To run the project, you need to export your Gemini API Key as an environment variable with the following name: `GEMINI_API_KEY`
 
+![Exemplo da interação aonde o usuário solicita a inclusão de um usuario.](./docs/sample.png)
+
 ## How to run
 
 1. Install dependencies:
